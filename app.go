@@ -44,7 +44,9 @@ func main() {
 		name = registry + "/" + name
 	}
 
-	fmt.Printf("Building tree '%s' in %s as '%s:%s'...\n", treeish, wd, name, treeish)
+	nameTag := name + ":" + treeish
+
+	fmt.Printf("Building tree '%s' in %s as '%s'...\n", treeish, wd, nameTag)
 
 	gitArchive := exec.Command("git", "archive", treeish)
 
@@ -60,7 +62,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dockerBuild := exec.Command("docker", "build", "-t", name+":"+treeish, "-")
+	dockerBuild := exec.Command("docker", "build", "-t", nameTag, "-")
 
 	dockerBuildOut, err := dockerBuild.StdoutPipe()
 	if err != nil {
@@ -117,9 +119,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Printf("Publishing to %s...\n", *registryPtr)
+	fmt.Printf("Publishing to %s...\n", registry)
 
-	dockerPush := exec.Command("docker", "push", name)
+	dockerPush := exec.Command("docker", "push", nameTag)
 
 	dockerPushOut, err := dockerPush.StdoutPipe()
 	if err != nil {
