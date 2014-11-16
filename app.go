@@ -34,7 +34,9 @@ func main() {
 
 	fmt.Printf("Building tree '%s' in %s as '%s:%s'...\n", treeish, wd, name, treeish)
 
-	gitArchive := exec.Command("git", "archive", treeish, wd)
+	gitArchive := exec.Command("git", "archive", treeish)
+
+	gitArchive.Dir = wd
 
 	gitArchiveOut, err := gitArchive.StdoutPipe()
 	if err != nil {

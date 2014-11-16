@@ -10,7 +10,7 @@ Install the binary somewhere in your `$PATH`.
 
 ## Usage
 
-From the root of the repository you want to build, call `git build <tree-ish> <path>`,
+From inside the git repository you want to build, call `git build <tree-ish> <path>`,
 where `<tree-ish>` is the name of the branch or tag you want to build,
 and `<path>` is the path you want to include in the build (`.` for the current directory).
 
