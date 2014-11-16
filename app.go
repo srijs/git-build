@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -10,18 +11,26 @@ import (
 )
 
 func usage() {
-	fmt.Printf("Usage: %s <tree-ish> <path>\n", os.Args[0])
+	fmt.Printf("Usage: %s [options...] <tree-ish> <path>\n\nOptions:\n", os.Args[0])
+	flag.PrintDefaults()
 }
 
 func main() {
 
-	if len(os.Args) != 3 {
+	flag.Usage = usage
+
+	registryPtr := flag.String("publish", "", "publish the image to a docker registry")
+
+	flag.Parse()
+
+	if flag.NArg() != 2 {
 		usage()
-		os.Exit(1)
+		os.Exit(2)
 	}
 
-	treeish := os.Args[1]
-	buildpath := os.Args[2]
+	treeish := flag.Arg(0)
+	buildpath := flag.Arg(1)
+	registry := *registryPtr
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -31,6 +40,9 @@ func main() {
 	wd := path.Join(cwd, buildpath)
 
 	name := path.Base(wd)
+	if len(registry) > 0 {
+		name = registry + "/" + name
+	}
 
 	fmt.Printf("Building tree '%s' in %s as '%s:%s'...\n", treeish, wd, name, treeish)
 
@@ -100,5 +112,33 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if len(registry) == 0 {
+		os.Exit(0)
+	}
+
+	fmt.Printf("Publishing to %s...\n", *registryPtr)
+
+	dockerPush := exec.Command("docker", "push", name)
+
+	dockerPushOut, err := dockerPush.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dockerPushErr, err := dockerPush.StderrPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	go func() {
+		io.Copy(os.Stdout, dockerPushOut)
+	}()
+
+	go func() {
+		io.Copy(os.Stderr, dockerPushErr)
+	}()
+
+	dockerPush.Run()
 
 }

@@ -18,9 +18,14 @@ The files in the specified tree will be uploaded to the Docker daemon,
 which will build them and store the resulting image as `name:tag`,
 where `name` is the base name of the path, and tag is the specified tree.
 
+Optionally, you can specify a docker registry via the `-publish` flag,
+and the image will be published to that registry.
+
 For example:
 
-    git build master ./bar
+    git build -publish=index.docker.io/baz master ./bar
 
 This uploads the content of `./bar` in the state of the `master` branch,
 builds it according to `./bar/Dockerfile`, and saves the resulting image as `bar:master`.
+If the build is successful, the image will be uploaded to the user repository `baz/bar`
+in `index.docker.io`.
