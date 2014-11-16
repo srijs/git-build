@@ -3,6 +3,19 @@ git-build
 
 Build a git repository with a `Dockerfile`. Stop worrying about a dirty working directory or the wrong `HEAD`.
 
+## Why?
+
+Frequently building and publishing docker images from different branches in a repository is cumbersome.
+
+You have to:
+
+1. Make sure you checked out the right branch
+2. Make sure your working directory is clean (you don't want to publish your secret config or that huge test asset)
+3. Upload the current directory to the Docker daemon, and have him build the image
+4. Push the image to the designated Docker registry
+
+`git-build` makes this a one liner.
+
 ## Installation
 
 You can get binaries for Linux, Windows and OS X from [gobuild.io](http://gobuild.io/github.com/srijs/git-build).
