@@ -6,10 +6,11 @@ import (
 	"os/exec"
 	"io"
 	"log"
+	"path"
 )
 
 func usage() {
-	fmt.Printf("Usage: %s <tree-ish> <docker-tag>\n", os.Args[0])
+	fmt.Printf("Usage: %s <tree-ish> <path>\n", os.Args[0])
 }
 
 func main() {
@@ -19,10 +20,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	treeish := os.Args[1]
-	tag     := os.Args[2]
+	treeish   := os.Args[1]
+	buildpath := os.Args[2]
 
-	gitArchive := exec.Command("git", "archive", treeish)
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	wd := path.Join(cwd, buildpath)
+
+	name := path.Base(wd)
+
+	fmt.Printf("Building tree '%s' in %s as '%s:%s'...\n", treeish, wd, name, treeish)
+
+	gitArchive := exec.Command("git", "archive", treeish, wd)
 
 	gitArchiveOut, err := gitArchive.StdoutPipe()
 	if err != nil {
@@ -34,7 +46,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dockerBuild := exec.Command("docker", "build", "-t", tag, "-")
+	dockerBuild := exec.Command("docker", "build", "-t", name + ":" + treeish, "-")
 
 	dockerBuildOut, err := dockerBuild.StdoutPipe()
 	if err != nil {
