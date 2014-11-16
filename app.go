@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"os/exec"
 	"io"
 	"log"
+	"os"
+	"os/exec"
 	"path"
 )
 
@@ -20,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	treeish   := os.Args[1]
+	treeish := os.Args[1]
 	buildpath := os.Args[2]
 
 	cwd, err := os.Getwd()
@@ -48,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dockerBuild := exec.Command("docker", "build", "-t", name + ":" + treeish, "-")
+	dockerBuild := exec.Command("docker", "build", "-t", name+":"+treeish, "-")
 
 	dockerBuildOut, err := dockerBuild.StdoutPipe()
 	if err != nil {
