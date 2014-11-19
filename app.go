@@ -42,15 +42,16 @@ func main() {
 	wd := path.Join(cwd, buildpath)
 
 	name := path.Base(wd)
+	prefix := ""
 	if len(registry) > 0 {
-		name = registry + "/" + name
+		prefix = registry + "/"
 	}
 
 	var nameTag string
 	if tag == "" {
-		nameTag = name + ":" + treeish
+		nameTag = prefix + name + ":" + treeish
 	} else {
-		nameTag = tag
+		nameTag = prefix + tag
 	}
 
 	fmt.Printf("Building tree '%s' in %s as '%s'...\n", treeish, wd, nameTag)
