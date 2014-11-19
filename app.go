@@ -20,6 +20,7 @@ func main() {
 	flag.Usage = usage
 
 	registryPtr := flag.String("publish", "", "publish the image to a docker registry")
+	tagPtr := flag.String("t", "", "specify a custom tag for the image")
 
 	flag.Parse()
 
@@ -31,6 +32,7 @@ func main() {
 	treeish := flag.Arg(0)
 	buildpath := flag.Arg(1)
 	registry := *registryPtr
+	tag := *tagPtr
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -44,7 +46,12 @@ func main() {
 		name = registry + "/" + name
 	}
 
-	nameTag := name + ":" + treeish
+	var nameTag string
+	if tag == "" {
+		nameTag = name + ":" + treeish
+	} else {
+		nameTag = tag
+	}
 
 	fmt.Printf("Building tree '%s' in %s as '%s'...\n", treeish, wd, nameTag)
 
